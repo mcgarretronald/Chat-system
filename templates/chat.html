@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">
+            Chat Room: {{ room_code }}
+        </div>
+        <div id="chat">
+            <!-- Messages will appear here -->
+        </div>
+        <div id="message-input-area">
+            <input id="message" type="text" placeholder="Type a message...">
+            <button id="send">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        const room = "{{ room_code }}";
+        const username = "{{ username }}";
+
+        // Notify the server of the user joining the room
+        socket.emit('join', { username: username, room: room });
+
+        // Send message on button click
+        document.getElementById('send').onclick = () => {
+            const message = document.getElementById('message').value;
+            if (message.trim() !== "") {
+                socket.emit('message', { room: room, message: message, username: username });
+                document.getElementById('message').value = '';
+            }
+        };
+
+        // Listen for incoming messages
+        socket.on('message', data => {
+            const chat = document.getElementById('chat');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+
+            if (data.username === username) {
+                messageDiv.classList.add('sent');
+            } else {
+                messageDiv.classList.add('received');
+            }
+
+            // Display the sender's name and message
+            messageDiv.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;  // Auto-scroll to the bottom
+        });
+
+        // Notify the server when the user leaves the chat
+        window.addEventListener('beforeunload', () => {
+            socket.emit('leave', { username: username, room: room });
+        });
+    </script>
+</body>
+</html>

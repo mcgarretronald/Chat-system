@@ -1,0 +1,27 @@
+<!-- This is the home page of the chat application. It contains two forms: one to create a new room and one to join an existing room. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Your Friends</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div id="home-container">
+        <h1>Chat with Your Friends</h1>
+        <!-- Form to create a new room -->
+        <form method="POST" action="{{ url_for('chat') }}" class ="reta">
+            <input type="text" name="username" placeholder="Enter Your Name" required>
+            <button type="submit" name="create">Create Room</button>
+        </form>
+        <!-- Form to join an existing room -->
+        <form method="POST" action="{{ url_for('chat') }}">
+            <input type="text" name="username" placeholder="Enter Your Name" required>
+            <input type="text" name="room_code" placeholder="Enter Room Code" required>
+            <button type="submit" name="join">Join Room</button>
+        </form>
+    </div>
+</body>
+</html>
+
